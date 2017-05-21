@@ -15,7 +15,7 @@
 - **Techniques:**  feature scaling, outlier detection, principal components analysis, k-means clustering.
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
 
-## 3. Data Visualization - 
+## 3. Data Visualization - Is a flight on-line?
 - **Data:** Flight data is collected for each airline by the U.S. government.
 - **Data Source:**  [Airline on-time data](https://transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time)
 - **Objectives:** Uncover hidden insights from the dataset.
