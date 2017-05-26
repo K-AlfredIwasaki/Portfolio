@@ -22,7 +22,7 @@
 - **Tools:** R and its packages: ggplot, ggmap, and dplyr among others.
 - **Techniques:** spacial visualization.
 
-## 4. Supervised Learning - [Finding donors for charity](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/finding_donors)
+## 4. Supervised Learning - [Finding donors for charity](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/04_finding_donors)
 - **Data:** Data collected for the U.S. census in 1994.
 - **Data Source:**  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Census+Income)
 - **Objectives:** Build, evaluate, and optimize a supervised learning model to predict an individuals' income.
