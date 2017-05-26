@@ -1,13 +1,13 @@
 # Portfolio
 
-## 1. Data Visualization - NYC Citi Bike
+## 1. Data Visualization - [NYC Citi Bike](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/01_NYC_Citi_Bike)
 - **Data:** Bike trip data collected for users of a bike rental service in NYC.
 - **Data Source:**  [Citi Bike Trip Histories](https://www.citibikenyc.com/system-data)
 - **Objectives:** Find interesting usage patterns in the data and come up with ideas to turn the data into values.
 - **Tools:** R and its packages: ggplot, ggmap, and dplyr among others.
 - **Techniques:** spacial visualization.
 
-## 2. Unsupervised Learning - Creating Customer Segments
+## 2. Unsupervised Learning - [Creating Customer Segments](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/02_Customer_Segments)
 - **Data:**  Product spending data collected for customers of a wholesale distributor in Lisbon, Portugal.
 - **Data Source:**  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/Wholesale+customers)
 - **Objectives:**  Identify customer segments hidden in the data. 
