@@ -29,3 +29,11 @@
 - **Tools:** Python with its packages: pandas, numpy, sklearn, matplotlib, and seaborn among others.
 - **Techniques:** Classification algorithms: logistic regression, random forest, support vector machines.
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
+
+## 5. Supervised Learning - [Predicting Boston Housing Prices](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/05_Boston_Housing_Prices)
+- **Data:** Data collected 
+- **Data Source:**  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/housing)
+- **Objectives:** Build an optimal model to estimate the best selling price for homes in Boston
+- **Tools:** Python with its packages: pandas, numpy, sklearn, matplotlib, and seaborn among others.
+- **Techniques:** 
+- **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
