@@ -31,7 +31,7 @@
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
 
 ## 5. Supervised Learning - [Predicting Boston Housing Prices](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/05_Boston_Housing_Prices)
-- **Data:** Data collected 
+- **Data:** The Boston housing data was collected in 1978 and each of the 506 entries represent aggregated data about 14 features for homes from various suburbs in Boston, Massachusetts. 
 - **Data Source:**  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/housing)
 - **Objectives:** Build an optimal model to estimate the best selling price for homes in Boston
 - **Tools:** Python with its packages: pandas, numpy, sklearn, matplotlib, and seaborn among others.
