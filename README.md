@@ -20,7 +20,7 @@
 - **Data Source:**  [Airline on-time data](https://transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time)
 - **Objectives:** Uncover hidden insights from the dataset.
 - **Tools:** R and its packages: ggplot, ggmap, and dplyr among others.
-- **Techniques:** spacial visualization.
+- **Techniques:** Spacial visualization.
 
 ## 4. Supervised Learning - [Finding donors for charity](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/04_finding_donors)
 - **Data:** Data collected for the U.S. census in 1994.
@@ -35,5 +35,5 @@
 - **Data Source:**  [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/housing)
 - **Objectives:** Build an optimal model to estimate the best selling price for homes in Boston
 - **Tools:** Python with its packages: pandas, numpy, sklearn, matplotlib, and seaborn among others.
-- **Techniques:** 
+- **Techniques:** Model evaluation: R2 score, learning curves, complexity curves, grid search, cross valiation
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
