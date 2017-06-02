@@ -1,0 +1,514 @@
+---
+title: "Flights Analysis"
+author: "K Iwasaki"
+date: "May 21, 2017"
+output:
+  html_document:
+    toc: true
+    toc_depth: 2
+---
+
+# Introduciton
+
+If you travel frequently, you are likely to have experienced a flight delay. You might have wondered how frequently a flight delays. Airline on-time performance data is public. The U.S. government makes the data available [here](https://transtats.bts.gov/DL_SelectFields.asp?Table_ID=236&DB_Short_Name=On-Time). I used the data for January 2017 for my investigation. The data contains 450,017 columns and variables including carrier, flight, departure delay, arrival delay, and airport. It's important to note that the data doesn't include international flights. Lastly, R is a stastical computing language I used for this analysis.
+
+My focuses in this investigation are mainly around:
+
+- Understand on-time performance by airlines at high level. This helps to set a stage for detail analysis.
+- Investigate deplays in depth. Objective is to uncover useful insights to avoid flight delays for future travel.
+
+# Which airline performs best?
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#closeAllConnections()
+#rm(list=ls())
+
+library(maps)
+library(ggplot2)
+library(ggmap)
+library(grid)
+library(dplyr)
+library(lubridate)
+library(gridExtra)
+library(tidyr)
+library(maps)
+library(mapdata)
+
+setwd("C:/Users/K/Documents/GitHub/Portfolio/Flights")
+flight <- read.csv("130064074_T_ONTIME.csv") # 2017 Jan
+
+head(flight)
+colSums(is.na(flight))
+# lots of NAs in columns related to delays
+# this might be because those flights are cancelled.
+
+# it seems yes. there are 8886 canceled flights.
+# NA's for DEP_DELAY is 8541
+
+str(flight)
+
+names(flight)
+
+```
+
+```{r data preparation, include =FALSE}
+### renaming and binning --------------------------------------------------------------------------------------------------
+
+# increase factor levels before replacing an airline code with an arline name
+levels(flight$CARRIER) <- c(levels(flight$CARRIER), c("American", "Alaska", "JetBlue", 
+                                                      "ExpressJet", "Southwest", "Delta", 
+                                                      "Frontier", "Hawaiian", "Spirit", 
+                                                      "SkyWest", "United", "Virgin America"))
+
+# replace an airline code with an airline name
+flight$CARRIER[flight$CARRIER == "AA"] <- "American"
+flight$CARRIER[flight$CARRIER == "AS"] <- "Alaska"
+flight$CARRIER[flight$CARRIER == "B6"] <- "JetBlue"
+flight$CARRIER[flight$CARRIER == "EV"] <- "ExpressJet"
+flight$CARRIER[flight$CARRIER == "WN"] <- "Southwest"
+flight$CARRIER[flight$CARRIER == "DL"] <- "Delta"
+flight$CARRIER[flight$CARRIER == "F9"] <- "Frontier"
+flight$CARRIER[flight$CARRIER == "HA"] <- "Hawaiian"
+flight$CARRIER[flight$CARRIER == "NK"] <- "Spirit"
+flight$CARRIER[flight$CARRIER == "OO"] <- "SkyWest"
+flight$CARRIER[flight$CARRIER == "UA"] <- "United"
+flight$CARRIER[flight$CARRIER == "VX"] <- "Virgin America"
+
+flight$CARRIER <- factor(flight$CARRIER,
+                         levels = c("Southwest", "American", "Delta", "SkyWest", "United",
+                                    "ExpressJet", "JetBlue", "Alaska", "Spirit", "Frontier",
+                                    "Hawaiian", "Virgin America"))
+
+flight$ARR_TIME2 <- NA
+flight$ARR_TIME2[flight$ARR_TIME >= 000 & flight$ARR_TIME < 100] <- 24
+flight$ARR_TIME2[flight$ARR_TIME >= 100 & flight$ARR_TIME < 200] <- 1
+flight$ARR_TIME2[flight$ARR_TIME >= 200 & flight$ARR_TIME < 300] <- 2
+flight$ARR_TIME2[flight$ARR_TIME >= 300 & flight$ARR_TIME < 400] <- 3
+flight$ARR_TIME2[flight$ARR_TIME >= 400 & flight$ARR_TIME < 500] <- 4
+flight$ARR_TIME2[flight$ARR_TIME >= 500 & flight$ARR_TIME < 600] <- 5
+flight$ARR_TIME2[flight$ARR_TIME >= 600 & flight$ARR_TIME < 700] <- 6
+flight$ARR_TIME2[flight$ARR_TIME >= 700 & flight$ARR_TIME < 800] <- 7
+flight$ARR_TIME2[flight$ARR_TIME >= 800 & flight$ARR_TIME < 900] <- 8
+flight$ARR_TIME2[flight$ARR_TIME >= 900 & flight$ARR_TIME < 1000] <- 9
+flight$ARR_TIME2[flight$ARR_TIME >= 1000 & flight$ARR_TIME < 1100] <- 10
+flight$ARR_TIME2[flight$ARR_TIME >= 1100 & flight$ARR_TIME < 1200] <- 11
+flight$ARR_TIME2[flight$ARR_TIME >= 1200 & flight$ARR_TIME < 1300] <- 12
+flight$ARR_TIME2[flight$ARR_TIME >= 1300 & flight$ARR_TIME < 1400] <- 13
+flight$ARR_TIME2[flight$ARR_TIME >= 1400 & flight$ARR_TIME < 1500] <- 14
+flight$ARR_TIME2[flight$ARR_TIME >= 1500 & flight$ARR_TIME < 1600] <- 15
+flight$ARR_TIME2[flight$ARR_TIME >= 1600 & flight$ARR_TIME < 1700] <- 16
+flight$ARR_TIME2[flight$ARR_TIME >= 1700 & flight$ARR_TIME < 1800] <- 17
+flight$ARR_TIME2[flight$ARR_TIME >= 1800 & flight$ARR_TIME < 1900] <- 18
+flight$ARR_TIME2[flight$ARR_TIME >= 1900 & flight$ARR_TIME < 2000] <- 19
+flight$ARR_TIME2[flight$ARR_TIME >= 2000 & flight$ARR_TIME < 2100] <- 20
+flight$ARR_TIME2[flight$ARR_TIME >= 2100 & flight$ARR_TIME < 2200] <- 21
+flight$ARR_TIME2[flight$ARR_TIME >= 2200 & flight$ARR_TIME < 2300] <- 22
+flight$ARR_TIME2[flight$ARR_TIME >= 2300 & flight$ARR_TIME < 2400] <- 23
+
+#summary(flight$DISTANCE)
+
+#   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+#   31.0   391.0   687.0   852.1  1096.0  4983.0 
+
+#-200, 200-400, 600-800, 800-1000, 1000-1500, 1500-2000, 2000-
+
+flight$DISTANCE2 <- NA
+flight$DISTANCE2[flight$DISTANCE < 200] <- "0-200"
+flight$DISTANCE2[flight$DISTANCE >= 200 & flight$DISTANCE < 400] <- "200-400"
+flight$DISTANCE2[flight$DISTANCE >= 400 & flight$DISTANCE < 600] <- "400-600"
+flight$DISTANCE2[flight$DISTANCE >= 600 & flight$DISTANCE < 800] <- "600-800"
+flight$DISTANCE2[flight$DISTANCE >= 800 & flight$DISTANCE < 1000] <- "800-1000"
+flight$DISTANCE2[flight$DISTANCE >= 1000 & flight$DISTANCE < 1500] <- "1000-1500"
+flight$DISTANCE2[flight$DISTANCE >= 1500 & flight$DISTANCE < 2000] <- "1500-2000"
+flight$DISTANCE2[flight$DISTANCE >= 2000] <- "2000-"
+
+flight$DISTANCE2 <- factor(flight$DISTANCE2, levels=c("0-200", "200-400", "400-600",
+                                                      "600-800", "800-1000","1000-1500",
+                                                      "1500-2000","2000-"))
+
+# create new variable  
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 7] <- "Sun"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 1] <- "Mon"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 2] <- "Tue"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 3] <- "Wed"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 4] <- "Thu"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 5] <- "Fri"
+flight$DAY_OF_WEEK2[flight$DAY_OF_WEEK == 6] <- "Sat"
+
+flight$DAY_OF_WEEK2 <- factor(flight$DAY_OF_WEEK2, 
+                                   levels=c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+
+```
+
+```{r fig.align="center", fig.width=12, fig.height=6, warning=FALSE, echo=FALSE}
+
+# create df with selected variables
+airline_performance <- flight %>%
+  group_by(CARRIER) %>%
+  summarise(flight_num = n(), distance = sum(DISTANCE, na.rm=TRUE), 
+            arr_delay = sum(ARR_DEL15, na.rm=TRUE),
+            cancelled = sum(CANCELLED, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num,
+         cancel_ratio = cancelled / flight_num,
+         ave_flight_dist = distance / flight_num )
+
+# total number of flights by airlines
+p1 <- ggplot(airline_performance, aes(x = reorder(CARRIER, flight_num) , y = flight_num)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Total number of flights") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+# total flight distances by airlines
+p2 <- ggplot(airline_performance, aes(x = reorder(CARRIER, flight_num) , y = distance)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Total flight distances") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+# average flight distance per flight by airlines
+p3 <- ggplot(airline_performance, aes(x = reorder(CARRIER, flight_num) , y = ave_flight_dist)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Average flight distance per flight") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+grid.arrange(p1, p2, p3, ncol = 3, nrow = 1,
+             top = textGrob("Airline Comparison", 
+                            gp=gpar(fontsize=18)))
+
+```
+
+Before investigating on-time performance for airlines, I wanted to understand a big picture: which airline fly more frequently and more distance. It turns out Southwest operated the largest number of flights 107,785 in January 2017. In other words, Soutwest had average 3,477 flights in day. American and Delta followed the Southwest with 73,132 and 69,813 flights respectively for the month. Total flight distances for airlines show similar a ranking to the ranking for the total number of flights. I also added a chart for average flight distance per flight for airlines for reference.
+
+With that high-level big picture in mind, let's dive into the on-time performance for airlines. I focused on two metrics: cancellations and arrival delays. I didn't include departure delay because I don't personally mind depature delay as long as my flight arrive on time.
+
+In January 2017, overall 2% of flights were cancelled. Look at airlines, SkyWest is the worst, cancelling 3.7% of its flights. Sprint and ExpressJet followed Skywest with 3.5% and 3.3% cancellation ratio respectively. Investigating cancellations can be interesting. I might analyze the data to see if certain airports have higher cancellation rate, if at certain time of the day cancellation rate is high, and so forth.
+
+It is no wonder frequent travellars (even non-frequent travellar) encounter flight delays. Unfortunately, flight delay is in fact frequent. 22% of flights arrived at their destination with more than 15 minuetes delay. Most of airlines have 20-30% of their flights delayed for arrival. Given arrival delays is almost ten times more frequent to cancallations, I focus on arrival delays for the rest of my analysis.
+
+```{r fig.align="center", fig.width=12, fig.height=6, warning=FALSE, echo=FALSE}
+
+# Percentages of flight cancellations by airlines
+p4 <- ggplot(airline_performance, aes(x = reorder(CARRIER, flight_num) , y = cancel_ratio)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Percentages of flight cancellations") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+# Percentages of arrival delays by airlines
+p5 <- ggplot(airline_performance, aes(x = reorder(CARRIER, flight_num) , y = arr_delay_ratio)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Percentages of arrival delays") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+
+grid.arrange(p1, p4, p5, ncol = 3, nrow = 1,
+             top = textGrob("Airline Performance Comparison", 
+                            gp=gpar(fontsize=18)))
+
+```
+
+# Investigate the delays further
+
+I recently read an article about tips for booking cheapest airline tickets. The article reads Tuesday, Wednesday, and Saturday are cheapest days to fly. Bigger airports(particularly hubs) often have cheaper airfares. These insights stimulates my thinking. Is there any particular days that have less or higher rate of arrival delays? Is there any particular time when arrival delays are more or less frequent? Does flight distance influence on arrival delays? Do bigger airports have more arrival delays or less arrival delays? Let's dive in! From this section, I drop five airlines with fewest number of flights from the analysis to simplify visualizations.
+
+## Is there any particular days have less or higher rate of arrival delays?
+
+Before investigating arrival delays for days of week, I looked at distribution of flights throughout a week. Monday, Tuesday, and Sunday have relatively higher number of flights compared to Wednesday, Thursday, Friday and Saturday. Saturday is clearly the lowest. One interpretation is that people fly out on Sunday, Monday, Tuesday for business then fly back later in the same week.
+
+**- More flights more delays in general but some exceptions.** Look at a chart on the right below which includes blue dotted line for mean value. A pattern for percentages of arrival delays aligns with one for total number of flights throughout a week. Days with more flights such as Sunday and Monday have higher percentages of arrival delays. However what's interesting is that Saturdays has relatively high percentages of arrival delays despite its relatively low total number of flights aday. On Tuesdays, while total number of flights is relatively high, percentages of arrival delays is relatively low.
+
+**- Delta and American perform better than average while Southwest, ExpressJet, SkyWest perform worse.**
+Arrival delays breakdowns for airlines provides insights. Delta shows best performance compared to its peers, running flights at lower percentages of arrival delays from Monday to Friday. American manages flights at lower than average arrival delays throughout a week. Southwest, Skywest, and ExpressJet performs worse than the average overall.
+
+
+```{r fig.align="center", fig.width=10, fig.height=5, warning=FALSE, echo=FALSE}
+### data preparation -----------------------------------------------------------------------------------------------------
+
+# exclude 5 five airlines
+flight_excl <- flight %>%
+  filter (!CARRIER %in% c("JetBlue", "Frontier", "Hawaiian", "Virgin America", "Spirit", "Alaska"))
+
+# summarize by carrier                     
+delay_w_dayweek <- flight_excl %>%
+  group_by(CARRIER, DAY_OF_WEEK2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+# summarize to calculate mean
+delay_w_dayweek2 <- flight %>%
+  group_by(DAY_OF_WEEK2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+### plotting -------------------------------------------------------------------------------------------------------------
+
+p1 <- ggplot(delay_w_dayweek2, aes(x = DAY_OF_WEEK2, y = flight_num)) +
+  geom_bar(stat="identity", fill="steelblue") +
+  ggtitle("Total number of flights") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL)
+
+p2 <- ggplot(delay_w_dayweek, aes(x = DAY_OF_WEEK2, y = arr_delay_ratio, group= CARRIER, colour = CARRIER)) +
+  geom_line() + 
+  ggtitle("Percentages of arrival delays ") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  geom_line(data=delay_w_dayweek2, aes(group=1), colour = "blue", size = 1, linetype="dotted") + 
+  labs(x=NULL, y=NULL) +
+  theme(legend.position= c(0.9, 0.2)) +
+  scale_y_continuous(limits = c(0, 0.3))
+
+grid.arrange(p1, p2, ncol = 2, nrow = 1)
+
+```
+
+
+## Is there any particular time when arrival delays are more or less frequent?
+
+Flight schedule is in line with other public transforpotation: there are more flights from 10am to 9pm and less in the early morning and night. Percentages of arrival delays follow clear upward trend from 5am to midnight. 
+
+**- The later you fly, the more likely your flight get delayed.** It is interesting to observe that while total number of flights is almost constant from from 10am to 9pm, percentages of arrival delays continue to rise in the same time frame. One interpretation is that one arrival delay affects other flights and the delay get accumulated throughout a day. It is also worth noting that all the airlines show the same trend.
+
+
+```{r fig.align="center", fig.width=10, fig.height=5, warning=FALSE, echo=FALSE}
+
+### data preparation -----------------------------------------------------------------------------------------------------
+
+# summarize by carrier
+delay_w_arrtime <- flight_excl %>%
+  group_by(CARRIER, ARR_TIME2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+# summarize to calculate mean
+delay_w_arrtime2 <- flight %>%
+  group_by(ARR_TIME2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+
+### plotting -------------------------------------------------------------------------------------------------------------
+
+p1 <- ggplot(delay_w_arrtime2, aes(x = ARR_TIME2, y = flight_num)) +
+  geom_bar(stat="identity", fill="steelblue") +
+  ggtitle("Total number of flights") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  labs(x=NULL, y=NULL)
+
+p2 <- ggplot(delay_w_arrtime, aes(x = ARR_TIME2, y = arr_delay_ratio, colour = CARRIER)) +
+  geom_line() +
+  ggtitle("Percentages of arrival delays ") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  geom_line(data=delay_w_arrtime2, aes(group=1), colour = "blue", size = 1, linetype="dotted") +
+  labs(x=NULL, y=NULL) +
+  scale_x_continuous(limits = c(5, 24)) +
+  theme(legend.position= c(0.2, 0.8))
+
+grid.arrange(p1, p2, ncol = 2, nrow = 1)
+
+
+
+```
+
+## Does flight distance influence on arrival delays?
+
+Since this dataset includes only dometistic flight, flight distance is clustered below 1000 miles. Meidan vlaue for flight distance is 687 miles and mean is 852 means. Flights with longer distance pulls mean to the right.
+
+**- The more distance the higher arrival delays.** Originally I was thinking, if it flies longer distance and longer duration, it has more chance to catch-up while flying. Thus, longer distance flights should have less arrival delays. It seems this is not a case in real world. Look at percentages of arrival delays. Mean values for percentages of arrival delays are somewhere between 20% and 25% for any flight distances.
+
+**- Delta and American are a winner again.** Airline breakdown shows that better performers are Delta, American and United, managing arrival delays lower than the mean for almost all flight distances. Skywest, Southwest, and ExpressJet struggles to manage their flight on time.
+
+```{r fig.align="center", fig.width=10, fig.height=5, warning=FALSE, echo=FALSE}
+### data preparation ---------------------------------------------------------------------------------
+
+# summarize by carrier
+delay_w_distance <- flight_excl %>%
+  group_by(CARRIER, DISTANCE2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num) %>%
+  filter(!(CARRIER == "ExpressJet" & DISTANCE2 == "2000-")) ## remove outliers
+
+# summarize to calculate mean
+delay_w_distance2 <- flight %>%
+  group_by(DISTANCE2) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm=TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+
+### plotting -----------------------------------------------------------------------------------------
+
+p1 <- ggplot(flight, aes(x = flight$DISTANCE)) +
+  geom_histogram(binwidth=60, fill="steelblue") +
+  ggtitle("Total number of flights") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  labs(x=NULL, y=NULL)
+
+
+p2 <- ggplot(delay_w_distance, aes(x = DISTANCE2, y = arr_delay_ratio, group= CARRIER, colour = CARRIER) ) +
+  geom_line() +
+  ggtitle("Percentages of arrival delays ") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  geom_line(data=delay_w_distance2, aes(group=1), colour = "blue", size = 1, linetype="dotted") +
+  labs(x=NULL, y=NULL) +
+  theme(legend.position= c(0.2, 0.2)) +
+  scale_y_continuous(limits = c(0, 0.3))
+
+grid.arrange(p1, p2, ncol = 2, nrow = 1)
+
+
+```
+
+## Do hub airports have more arrival delays or less arrival delays?
+
+In order to tackle this question, first I found hub airports for each airlines by getting total number of arrival flights per ariport for each airline and by filtering top five airports for each airlines. Excluding duplication, I got 18 airpots and visualized them on the map as below. 
+
+#### Hub airports --- visualize where they are and their flight volume
+
+In the map, each dot reflects number of flights for each airline. For example, if you are insterested in looking at hub airports for Delta, you find some green dots with various sizes. The largest green dots is at Atlanta, Georgia. In other words, Atlanta airport is the largest hub for Delta. You can also observe green dots at Minneapolis, and Detroit. 
+
+```{r fig.align="center", fig.width=8, fig.height=6, warning=FALSE, echo=FALSE, message = FALSE}
+### data preparation ----------------------------------------------------------------------------
+
+# summarize by carrier
+airport <- flight_excl %>% 
+  group_by(CARRIER, DEST_CITY_NAME) %>%
+  summarise(flight_num = n()) %>%
+  arrange(CARRIER,desc(flight_num))
+
+# get a list of carriers
+airlines <- unique(flight_excl$CARRIER)
+
+# create df with top five airports for each carrir
+datalist = list()
+
+for (i in 1:6) {
+  df <- airport %>% 
+  filter(CARRIER == airlines[i]) %>%
+  head(5)
+  datalist[[i]] <- df
+}
+hub_airport <- do.call(rbind, datalist)
+
+hub_airport_names <- as.character(unique(hub_airport$DEST_CITY_NAME))
+
+# add geocodes to each airport
+geocodes <- geocode(as.character(hub_airport$DEST_CITY_NAME))
+hub_airport <- data.frame(hub_airport, geocodes)
+
+### plotting --------------------------------------------------------------------------------------
+# get the U.S. map
+all_states <- map_data("state")
+
+ggplot() + geom_polygon(data = all_states, aes(x=long, y = lat, group = group), 
+                        colour="white", fill="grey10") + 
+  coord_fixed(1.3) +
+  geom_jitter(data = hub_airport, mapping = aes(x = lon, y = lat, color = CARRIER, size = flight_num),
+             alpha = 0.4, width = 0.5, height = 0.5) +
+  scale_size(range = c(2, 12)) +
+  ggtitle("Hub Airports") +
+  theme(plot.title = element_text(hjust = 0.5, size=18)) +
+  labs(x=NULL, y=NULL) +
+  theme(panel.border = element_blank())
+
+
+# refer http://ggplot2.tidyverse.org/reference/position_jitter.html for controlling jitter
+# refer https://cran.r-project.org/web/packages/fiftystater/vignettes/fiftystater.html for mapping the U.S.
+
+```
+
+#### Hub airports --- uncover patterns for on-time performance
+
+Second step in this analysis for hub airpots is look at on-time performance for each of hub airpors. I ordered airports by the total number of arrival flights in descending order. The chart on the right contains some valuable information to understand on-time performance in detail: the blue line representing a mean value for percentages of arrival delays for each station, and the dots representing a mean value for percentages of arrival delays for each station for each airline with size of a dot corresponding to flight volume. Key takeaways are as followings:
+
+**- On-time performances vary across hub stations.** 16% of flights arrives more than 15 mins at Atalanta and  13% at Charlotte while 35% at Los Angles and 36% at San Francisco. A mergin between the best and worst score is about 20% which is too large to ignore.
+
+**- On-time performances for airlines cluster to some extent at each hub station.** This is notable at Atlanta and Las Vegas where best performer and worst performer sit in a mergin of less than 10%. Most of stations show 10-15% mergin between best and worst performer.
+
+Note: I simplified the analysis by combining airports in a same city into one. A larger airport handles much higher flight volumes than a smaller airport in a same city. Thus, my simplification ends up focusing on a larger airport in each city.
+
+```{r fig.align="center", fig.width=12, fig.height=8.5, warning=FALSE, echo=FALSE}
+### data preparation ----------------------------------------------------------------------------------------------
+
+# summarize by airline
+hub_airport_perf <- flight_excl %>% 
+  filter (DEST_CITY_NAME %in% hub_airport_names) %>%
+  group_by(CARRIER, DEST_CITY_NAME) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm = TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num)
+
+# summarize to calculate mean
+hub_airport_perf2 <- flight %>% 
+  filter (DEST_CITY_NAME %in% hub_airport_names) %>%
+  group_by(DEST_CITY_NAME) %>%
+  summarise(flight_num = n(), arr_delay = sum(ARR_DEL15, na.rm = TRUE)) %>%
+  mutate(arr_delay_ratio = arr_delay / flight_num) %>%
+  arrange(flight_num)
+
+hub_level <- hub_airport_perf2$DEST_CITY_NAME
+
+
+hub_airport_perf$DEST_CITY_NAME <- factor(hub_airport_perf$DEST_CITY_NAME,
+                         levels = hub_level)
+
+### plotting -----------------------------------------------------------------------------------------------------
+
+p1 <- ggplot(hub_airport_perf2, aes(x = reorder(DEST_CITY_NAME, flight_num), y = flight_num)) +
+  geom_bar(stat = "identity", fill="steelblue") +
+  coord_flip() +
+  ggtitle("Total number of flights(arrivals)") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  labs(x=NULL, y=NULL)
+
+p2 <- ggplot(hub_airport_perf, aes(x = DEST_CITY_NAME, y = arr_delay_ratio, color = CARRIER, size = flight_num)) +
+  geom_jitter(alpha = 0.6, width = 0.15, height = 0) +
+  coord_flip() +
+  scale_size(range = c(2, 7)) +
+  geom_line(data=hub_airport_perf2, aes(group=1), colour = "blue", size = 1, linetype=1) +
+  ggtitle("Percentages of arrival delays") +
+  theme(plot.title = element_text(hjust = 0.5, size=14)) +
+  guides(fill=FALSE) +
+  labs(x=NULL, y=NULL) +
+  theme(legend.position= c(0.9, 0.7))
+
+grid.arrange(p1, p2, ncol = 2, nrow = 1)
+
+```
+
+# Conclusion
+
+**1. Travel in a middle of a week. Avoid Monday and Sunday.**
+Tuesday and Wednesday are a good day to fly with average 19% and 18% arrival delays of more than 15 minuets while 26% on Monday and 24% on Sunday.
+
+**2. Book a flight at earlier time in a day. Avoid flights arriving destination after 22pm.**
+From 7am to 8am, only 6% of flights arrive their destination with more than 15 minutes delay. The number goes up toward the end of a day. From 10pm to 11pm, it is as high as 30% for arrival delays.
+
+**3. Flight distance doesn't matter much for arrival delays**
+In contrast to our intuition that longer distance flight catches up delay and thus doesn't arrive late, flight distance doesn't influence at least percentage of arrival delays.
+
+
+**4. Choose better hub airports if possible. Avoid Los Angeles and San Francisco.**
+There are good and bad hub airports. If you make transit at a hub station to make flight cheaper, you should avoid some bad airports. Here is a black list: 35% arrival delays at Los Angeles, 36% at San Francisco, 30% at Las Vegas, and 29% at Newark.
+
+
+
+
+
+
+
+
+
+
