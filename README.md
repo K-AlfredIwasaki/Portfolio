@@ -1,6 +1,6 @@
 # Portfolio
 
-## 1. End-to-End Data Science Project: Startup Database and Recommendation Engine
+## 1. End-to-End Data Science Project - [Startup Database and Recommendation Engine](https://github.com/K-AlfredIwasaki/job_hunting_made_easy)
 - **Problem:** For job seekers, finding a startup that matches their interests is hard because information is scattered.
 - **Solution:** Objective of this project is create end-to-end solution from data collection, to database generation, to generation of recommendation for startups that matches your interests
 - **Data:** Startup database with a complete set of information: company name, company size, money raised, industry, description, HQ location, and etc for each company.
