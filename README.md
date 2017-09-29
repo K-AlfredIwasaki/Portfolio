@@ -7,7 +7,7 @@
 - **Data Source:**  Webscraped startup information from Tech Crunch, Google, LinkedIn, and Bloomberg.
 - **Tools:** Python with its packages: pandas, numpy, and sklearn among others, R with its packages: ggplot, ggmap, and dplyr among others, Selenium, and BeautifulSoup
 - **Techniques:** K-Nearest Neighbor, spacial visualization, 
-- **Documentation:** PDF link
+- **Documentation:** [PDF document](https://github.com/K-AlfredIwasaki/job_hunting_made_easy/blob/master/startup_db_recommendation.pdf)
 
 ## 2. Data Visualization - [NYC Citi Bike](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/01_NYC_Citi_Bike)
 - **Data:** Bike trip data collected for users of a bike rental service in NYC.
