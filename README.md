@@ -6,7 +6,7 @@
 - **Data:** Startup database with a complete set of information: company name, company size, money raised, industry, description, HQ location, and etc for each company.
 - **Data Source:**  Webscraped startup information from Tech Crunch, Google, LinkedIn, and Bloomberg.
 - **Tools:** Python with its packages: pandas, numpy, and sklearn among others, R with its packages: ggplot, ggmap, and dplyr among others, Selenium, and BeautifulSoup
-- **Techniques:** K-Nearest Neighbor, spacial visualization, 
+- **Techniques:** K-Nearest Neighbor, spacial visualization, feature scaling, feature engineering
 - **Documentation:** [PDF document](https://github.com/K-AlfredIwasaki/job_hunting_made_easy/blob/master/startup_db_recommendation.pdf)
 
 ## 2. Data Visualization - [NYC Citi Bike](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/01_NYC_Citi_Bike)
