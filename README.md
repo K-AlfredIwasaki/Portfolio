@@ -47,10 +47,28 @@
 - **Techniques:** Model evaluation: R2 score, learning curves, complexity curves, grid search, cross valiation
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
 
-## 7. Supervised Learning - [Who Supports Sanders over Clinton](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/who_supports_Sanders)
+## 7. Statistical Modeling and Inference - [Who Supports Sanders over Clinton](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/who_supports_Sanders)
 - **Data:** A political survey conducted in January 2016 and is able to identify voters who preferred Bernie Sanders over Hillary Clinton. In addition, the dataset contains inforamtion on respondents' party affilication, race, gender, and birth year. 
 - **Data Source:**  NA
 - **Objectives:** Identify who is likely to support Bernie Sanders over Hillary Clinton.
 - **Tools:** R with its packages: ggplot, glm, and car among others.
 - **Techniques:** Exploratory Data Analysis especially for categorical variables, Confidence Intervals(Wald, Profile Likelihood), Independent two sample t-test, and Logistic Regression.
-- **Note:** This is one of the projects for Statistical Methods for Discrete Response, Time Series, and Panel Data.
+- **Note:** This is one of the projects for a course: Statistical Methods for Discrete Response, Time Series, and Panel Data at UC Berkeley.
+
+## 8. Statistical Modeling and Inference - [Reducing Crime](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/reducing_crime)
+- **Data:** Crime statistics for a selection of 81 counties. The data-set includes 25 variables that characterises each country.
+- **Data Source:**  NA
+- **Objectives:** Provide research for a (hypothetical) politicla campaign, using the data-set. Summarize key decisive factors that influence crime through statistical modeling and inference techniques. Further, report the findings from the analysis to help generate policy suggestions that could be applied to a local government as a part of a polical campaign.
+- **Tools:** R with its packages: ggplot, lm, and car among others.
+- **Techniques:** Verification of Gaussian Maurkov Assumptions for the model to be BLUE, Model Interpretation, Model Selection.
+- **Note:** This is one of the group projects for a course: Statistics for Data Science at UC Berkeley.
+
+## 9. Supervised Learning - [Digit Recognition](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/digit_recognition)
+- **Data:** 
+- **Data Source:**  
+- **Objectives:** Practice applying various machine learning algorithms
+- **Tools:** Python with its packages: sklearn, matplotlib, and numpy among others.
+- **Techniques:**  Model Evaluation, Gaussian Blur, K Nearest Neighbors, various Naive Bayes algorithms (Gaussian, Binomial, and Multinomial NB).
+- **Note:** This is one of the group projects for a course: Applied Machine Learning at UC Berkeley.
+
+
