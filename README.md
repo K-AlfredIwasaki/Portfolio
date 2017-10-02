@@ -52,5 +52,5 @@
 - **Data Source:**  NA
 - **Objectives:** Identify who is likely to support Bernie Sanders over Hillary Clinton.
 - **Tools:** R with its packages: ggplot, glm, and car among others.
-- **Techniques:** Exploratory Data Analysis especially for categorical variables, Confidence Intervals, Independent two sample t-test, 
+- **Techniques:** Exploratory Data Analysis especially for categorical variables, Confidence Intervals(Wald, Profile Likelihood), Independent two sample t-test, and Logistic Regression.
 - **Note:** This is one of the projects for Statistical Methods for Discrete Response, Time Series, and Panel Data.
