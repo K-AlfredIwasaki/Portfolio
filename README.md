@@ -46,3 +46,11 @@
 - **Tools:** Python with its packages: pandas, numpy, sklearn, matplotlib, and seaborn among others.
 - **Techniques:** Model evaluation: R2 score, learning curves, complexity curves, grid search, cross valiation
 - **Note:** This is one of the projects for Udacity Nano Degree Program - [Machine Learning Engineer](https://www.udacity.com/nanodegree)
+
+## 7. Supervised Learning - [Who supports Sanders over Clinton](https://github.com/K-AlfredIwasaki/Portfolio/tree/master/who_supports_Sanders)
+- **Data:** A political survey conducted in January 2016 and is able to identify voters who preferred Bernie Sanders over Hillary Clinton. In addition, the dataset contains inforamtion on respondents' party affilication, race, gender, and birth year. 
+- **Data Source:**  NA
+- **Objectives:** Identify who is likely to support Bernie Sanders over Hillary Clinton.
+- **Tools:** R with its packages: ggplot, glm, and car among others.
+- **Techniques:** Exploratory Data Analysis especially for categorical variables, Confidence Intervals, Independent two sample t-test, 
+- **Note:** This is one of the projects for Statistical Methods for Discrete Response, Time Series, and Panel Data.
